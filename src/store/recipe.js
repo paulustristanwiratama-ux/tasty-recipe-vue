@@ -112,7 +112,7 @@ export default {
     async getRecipeDetail({ commit }, payload) {
       try {
         const { data } = await axios.get(
-          `https://recipe-vue-batch2-default-rtdb.firebaseio.com/recipes/ ${payload}.json `);
+          `https://recipe-vue-batch2-default-rtdb.firebaseio.com/recipes/${payload}.json`);
 
         commit("setRecipeDetail", data);
       } catch (err) {}

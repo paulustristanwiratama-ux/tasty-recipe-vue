@@ -7,7 +7,7 @@
         <div class="h-50">
           <h4 class="fs-5 mb-0">{{ recipe.name }}</h4>
         </div>
-        <RouterLink to="/recipe/recipe.id" class="text-decoration-none"><base-button class="login w-100 my-3">Detail
+        <RouterLink :to="`/recipe/{recipe.id}`" class="text-decoration-none"><base-button class="login w-100 my-3">Detail
           </base-button></RouterLink>
         <p>Recipe By {{ recipe.username }}</p>
       </div>

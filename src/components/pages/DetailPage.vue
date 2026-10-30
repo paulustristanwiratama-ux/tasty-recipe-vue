@@ -69,5 +69,5 @@
 </template>
 
 <script setup>
-import RecipeDetail from " .. /detail/RecipeDetail. vue"
+import RecipeDetail from "../detail/RecipeDetail.vue"
 </script>
