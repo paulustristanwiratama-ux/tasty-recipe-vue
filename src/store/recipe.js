@@ -10,8 +10,9 @@ const fallbackRecipes = [
     name: "Beet Wellington",
     description:
       "Gordon Ramsay's version of the classic steak dish – a showstopping centrepiece on a special occasions",
-    imageLink: "https://playswellwithbutter.com/wp-content/uploads/2020/12/Individual-Beef-Wellington-27.jpg",
-    username: "andrewtan"
+    imageLink:
+      "https://playswellwithbutter.com/wp-content/uploads/2020/12/Individual-Beef-Wellington-27.jpg",
+    username: "andrewtan",
   },
   {
     id: 2,
@@ -22,8 +23,9 @@ const fallbackRecipes = [
     name: "Napa Cabbage Kimchi",
     description:
       "this dish is so common and iconic among Koreans that we simply call it “kimchi.” When people talk about kimchi, this is the side dish they’re referring to, despite the fact that there are many kinds of kimchi in Korean cuisine, and many made with napa cabbage, too.",
-    imageLink: "https://www.koreanbapsang.com/wp-content/uploads/2019/11/DSC6782-4-1.jpg",
-    username: "junarampho"
+    imageLink:
+      "https://www.koreanbapsang.com/wp-content/uploads/2019/11/DSC6782-4-1.jpg",
+    username: "junarampho",
   },
   {
     id: 3,
@@ -36,7 +38,7 @@ const fallbackRecipes = [
       "This potato salad recipe is for the traditional creamy type of potato salad, with eggs, celery, and relish. It's perfect for making ahead to let the flavors develop.",
     imageLink:
       "https://food.fnr.sndimg.com/content/dam/images/food/fullset/2011/6/3/1/FNM_070111-Insert-002_s4x3.jpg.rend.hgtvcom.616.462.suffix/1371597728929.jpeg",
-    username: "renatamoloek"
+    username: "renatamoloek",
   },
   {
     id: 4,
@@ -49,7 +51,7 @@ const fallbackRecipes = [
       "This churros recipe is astonishingly easy, and makes a truly great churros that’s hot and crisp on the outside, fluffy on the inside.",
     imageLink:
       "https://bellyfull.net/wp-content/uploads/2021/03/Churros-blog-3.jpg",
-    username: "anthonio"
+    username: "anthonio",
   },
   {
     id: 5,
@@ -62,7 +64,7 @@ const fallbackRecipes = [
       "Popular in Korea, melted cheese ramyun is an easy way to cut through the intense spice of Shin Ramyun and adds a delicious creamy flavour!",
     imageLink:
       "https://www.dinnerwithjulie.com/wp-content/uploads/2015/02/Screen-shot-2015-02-08-at-11.28.46-PM.png",
-    username: "anthonio"
+    username: "anthonio",
   },
 ];
 
@@ -71,6 +73,7 @@ export default {
   state() {
     return {
       recipes: fallbackRecipes,
+      recipeDetail: {},
     };
   },
   getters: {},
@@ -78,21 +81,24 @@ export default {
     setRecipeData(state, payload) {
       state.recipes = payload;
     },
+    setrecipeDetail(state, payload) {
+      state.recipeDetail = payload;
+    },
   },
   actions: {
     async getRecipeData({ commit }) {
       try {
         const { data } = await axios.get(
-          "https://recipe-vue-batch2-default-rtdb.firebaseio.com/recipes.json"
-        )
+          "https://recipe-vue-batch2-default-rtdb.firebaseio.com/recipes.json",
+        );
 
-        const arr = []
-        for (let key in data){
-          arr.push({id: key, ...data[key]})
+        const arr = [];
+        for (let key in data) {
+          arr.push({ id: key, ...data[key] });
         }
 
-        commit("setRecipeData", arr)
-        
+        commit("setRecipeData", arr);
+
         if (Array.isArray(data)) {
           commit("setRecipeData", data);
         } else if (data && typeof data === "object") {
@@ -101,6 +107,15 @@ export default {
       } catch (err) {
         console.error("Unable to load recipes:", err);
       }
+    },
+
+    async getRecipeDetail({ commit }, payload) {
+      try {
+        const { data } = await axios.get(
+          `https://recipe-vue-batch2-default-rtdb.firebaseio.com/recipes/ ${payload}.json `);
+
+        commit("setRecipeDetail", data);
+      } catch (err) {}
     },
   },
 };
