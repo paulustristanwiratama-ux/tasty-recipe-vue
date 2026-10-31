@@ -10,9 +10,9 @@
 import { onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { useStore } from "vuex"
-import RecipeDescription from "./RecipeDescription.vue"
 import RecipeDirections from "./RecipeDirections.vue"
-import RecipeIngredients from "./RecipeIngredients.vue"
+import RecipeIngredient from "./RecipeIngredients.vue"
+import RecipeDescsription from "./RecipeDescription.vue"
 
 const store = useStore()
 const route = useRoute()
