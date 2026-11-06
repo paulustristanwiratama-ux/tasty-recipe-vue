@@ -205,12 +205,11 @@ body {
   border-color: #4c4ddc !important;
 }
 
-@media only screen and (min-width: 992px) {
-  /* styles for browsers larger than 960px; */
-  .recipe__detail-img {
-    width: 200px;
-    height: 200px;
-  }
+.recipe__detail-img {
+  width: 100%;
+  max-width: 311px;
+  aspect-ratio: 1;
+  object-fit: cover;
 }
 
 @media only screen and (min-width: 768px) {
@@ -229,11 +228,6 @@ body {
 
 @media only screen and (min-width: 576px) {
   /* styles for mobile browsers smaller than 480px; (iPhone) */
-  .recipe__detail-img {
-    width: 311px;
-    height: 311px;
-  }
-
   .btn.delete-btn {
     width: 140px;
   }
