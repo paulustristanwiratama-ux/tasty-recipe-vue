@@ -1,5 +1,5 @@
 <template>
-  <div class="col-sm-8 col-4 py-0">
+  <div class="header__search flex-grow-1" style="max-width: 320px">
     <div class="d-none d-sm-block">
       <div
         class="header__searchbar input-group align-items-center border rounded-pill"
@@ -12,7 +12,7 @@
         />
       </div>
     </div>
-    <div class="d-block d-sm-none border-end text-end px-3">
+    <div class="d-flex d-sm-none justify-content-center border-end px-3">
       <i class="fa-solid fa-magnifying-glass"></i>
     </div>
   </div>
