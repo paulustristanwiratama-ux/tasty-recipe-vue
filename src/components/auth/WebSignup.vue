@@ -28,7 +28,7 @@
         </base-input><!-- Confirm Password -->
 
         <div class="my-4">
-          <base-input type="file" identity="recipeImage" label="Profile Photo" isImage="true">
+          <base-input type="file" identity="recipeImage" label="Profile Photo" isImage="true" @input="checkImage">
             <div>
               <div class="border p-1 mt-2 rounded-circle">
                 <!-- <img src="../../assets/images/user.png" class="rounded-circle" width="140" height="150" style="object-fit: cover" /> -->
@@ -57,4 +57,16 @@
 <script setup>
 import BaseButton from "../ui/BaseButton.vue";
 import BaseInput from "../ui/BaseInput.vue";
+import { reactive } from "vue";
+
+const signupData = reactive({
+  firstname: "",
+  lastname: "",
+  username: "",
+  email: "",
+  password: "",
+  confirmationPassword: "",
+  isLogin: false,
+  imageLink: "",
+});
 </script>
