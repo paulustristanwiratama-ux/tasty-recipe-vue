@@ -1,14 +1,10 @@
 <template>
-  <div
-    class="header__signup col-7 col-sm-3 fw-semibold d-flex justify-content-evenly align-items-center text-decoration-none"
-    style="color: #4c4ddc; text-align: right"
+  <RouterLink
+    to="/signup"
+    class="header__signup d-flex align-items-center gap-2 fw-semibold text-decoration-none text-nowrap"
+    style="color: #4c4ddc"
   >
-    <RouterLink
-      to="/signup"
-      class="header__signup col-7 col-sm-3 fw-semibold d-flex justify-content-evenly align-items-center text-decoration-none"
-    >
-      <i class="fa-solid fa-user"></i>
-      <p class="mb-0">Sign Up</p>
-    </RouterLink>
-  </div>
+    <i class="fa-solid fa-user"></i>
+    <span>Sign Up</span>
+  </RouterLink>
 </template>

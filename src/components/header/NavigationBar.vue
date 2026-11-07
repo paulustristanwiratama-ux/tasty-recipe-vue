@@ -1,8 +1,8 @@
 <template>
-    <div class="header navbar row ustify-content-between align-items-center" style="width: 450px">
+    <nav class="header d-flex align-items-center justify-content-end gap-3 ms-auto flex-grow-1" aria-label="Main navigation">
         <SearchMenu />
         <SignupMenu />
-    </div>
+    </nav>
 </template>
 
 <script setup>

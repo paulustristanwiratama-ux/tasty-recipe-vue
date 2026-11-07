@@ -12,7 +12,7 @@ import {store} from './store/index'
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavious() {
+  scrollBehavior() {
     return { top: 0 };
   },
 });

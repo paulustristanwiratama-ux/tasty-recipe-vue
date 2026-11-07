@@ -13,11 +13,11 @@ import RecipeList from '../recipe/RecipeList.vue';
         friends you follow.
       </p>
     </div>
+    <RecipeList
+      :recipes="recipeList"
+      v-if="recipeListStatus">
+    </RecipeList>
   </div>
-  <RecipeList 
-  :recipes="recipeList" 
-  v-if="recipeListStatus">
-  </RecipeList>
 </template>
 
 <script setup>
