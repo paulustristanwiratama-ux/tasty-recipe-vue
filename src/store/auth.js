@@ -1,128 +1,127 @@
-import axios from "axios";
-import Cookies from "js-cookie";
-import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { apiKey, databaseUrl } from '../firebase';
 
-const store = useStore ()
-const router = useRouter ()
+const cookieNames = ['jwt', 'tokenExpirationDate', 'UID'];
+const cookieOptions = { sameSite: 'Lax', secure: location.protocol === 'https:' };
+let logoutTimer;
 
-const login = async () => {
-    await store.dispatch ("auth/getLoginData", loginData);
-    router.push("/")
+function scheduleLogout(commit, expirationDate) {
+  clearTimeout(logoutTimer);
+  logoutTimer = setTimeout(() => commit('logout'), expirationDate - Date.now());
+}
+
+function clearCookies() {
+  cookieNames.forEach((name) => Cookies.remove(name));
+}
+
+function initialSession() {
+  const token = Cookies.get('jwt');
+  const tokenExpirationDate = Number(Cookies.get('tokenExpirationDate'));
+
+  if (token && tokenExpirationDate > Date.now()) {
+    return { token, tokenExpirationDate, userId: Cookies.get('UID') || null };
+  }
+
+  clearCookies();
+  return { token: null, tokenExpirationDate: null, userId: null };
+}
+
+function requireFirebaseConfig() {
+  if (!apiKey || !import.meta.env.VITE_FIREBASE_DATABASE_URL) {
+    throw new Error('Add VITE_FIREBASE_API_KEY and VITE_FIREBASE_DATABASE_URL to .env.');
+  }
+}
+
+function authError(error) {
+  const code = error.response?.data?.error?.message;
+  const messages = {
+    EMAIL_EXISTS: 'This email is already registered.',
+    INVALID_EMAIL: 'Enter a valid email address.',
+    WEAK_PASSWORD: 'Use a password with at least 8 characters.',
+    INVALID_LOGIN_CREDENTIALS: 'Email or password is incorrect.',
+    EMAIL_NOT_FOUND: 'Email or password is incorrect.',
+    INVALID_PASSWORD: 'Email or password is incorrect.',
+  };
+  return new Error(messages[code] || 'Authentication failed. Please try again.');
 }
 
 export default {
   namespaced: true,
-  state() {
-    return {
-      token: null,
-      tokenExpiratonDate: null,
-      userLogin: {},
-      isLogin: false,
-    };
-  },
+  state: () => ({ ...initialSession(), userLogin: {} }),
   mutations: {
-    setToken(state, { idToken, expiresIn }) {
-      state.token = idToken;
-      state.tokenExpirationDate = expiresIn;
-      Cookies.set("tokenExpirationDate", expiresIn);
-      Cookies.set("jwt", idToken);
-    },
-    SetUserLogin(state, { userData, loginStatus }) {
+    setUserLogin(state, userData) {
       state.userLogin = userData;
-      state.isLogin = loginStatus;
+    },
+    setSession(state, { idToken, expiresIn, userId, userData }) {
+      const expirationDate = Date.now() + Number(expiresIn) * 1000;
+      const options = { ...cookieOptions, expires: new Date(expirationDate) };
+
+      state.token = idToken;
+      state.tokenExpirationDate = expirationDate;
+      state.userId = userId;
+      state.userLogin = userData;
+      Cookies.set('jwt', idToken, options);
+      Cookies.set('tokenExpirationDate', String(expirationDate), options);
+      Cookies.set('UID', userId, options);
+    },
+    logout(state) {
+      clearTimeout(logoutTimer);
+      state.token = null;
+      state.tokenExpirationDate = null;
+      state.userId = null;
+      state.userLogin = {};
+      clearCookies();
     },
   },
-
   actions: {
-    async getRegisterData({ commit, dispatch }, payload) {
-      const APIkey = "AIzaSyAZw4XY-USmeiN9j1cLmxJ8W8mu_l2a19U";
-      const authUrl =
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+    async restore({ commit, state }) {
+      const token = state.token;
+      if (!token) return;
+      scheduleLogout(commit, state.tokenExpirationDate);
+      if (!state.userId || !databaseUrl) return;
+
       try {
-        const { data } = await axios.post(authUrl + APIkey, {
-          email: payload.email,
-          password: payload.password,
-          returnSecureToken: true,
+        const { data } = await axios.get(`${databaseUrl}/user/${state.userId}.json`, {
+          params: { auth: token },
         });
-
-        commit("setToken", {
-          idToken: data.idToken,
-          expiresIn:
-            new Date().getTime() + Number.parseInt(data.expiresIn) * 1000,
-        });
-
-        const newUserData = {
-          userId: data.localId,
-          firstname: payload.firstname,
-          lastname: payload.lastname,
-          username: payload.username,
-          email: payload.email,
-          imageLink: payload.imageLink,
-        };
-
-        Cookies.set("UID", newUserData.userId);
-        await dispatch("addNewUser", newUserData);
-      } catch (err) {
-        console.log(err);
+        if (state.token === token) commit('setUserLogin', data || {});
+      } catch {
+        // The signed-in menu only needs the token.
       }
     },
+    async register({ commit }, payload) {
+      requireFirebaseConfig();
 
-    async getLoginData({ commit, dispatch }, payload) {
-      const APIkey = "MASUKKAN_WEB_API_KEY";
-      const authUrl =
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+      let data;
+      try {
+        ({ data } = await axios.post(
+          `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`,
+          { email: payload.email, password: payload.password, returnSecureToken: true },
+        ));
+      } catch (error) {
+        throw authError(error);
+      }
+
+      const userData = {
+        userId: data.localId,
+        firstname: payload.firstname,
+        lastname: payload.lastname,
+        username: payload.username,
+        email: payload.email,
+        imageLink: payload.imageLink,
+      };
 
       try {
-        const { data } = await axios.post(authUrl + APIkey, {
-          email: payload.email,
-          password: payload.password,
-          returnSecureToken: true,
+        await axios.put(`${databaseUrl}/user/${data.localId}.json`, userData, {
+          params: { auth: data.idToken },
         });
-
-        commit("setToken", {
-          idToken: data.idToken,
-          expiresIn:
-            new Date().getTime() + Number.parseInt(data.expires_in) * 1000,
-        });
-
-        await dispatch("getUser", data.localId);
-      } catch (err) {
-        console.log(err);
+      } catch {
+        throw new Error('Account created, but your profile could not be saved. Please sign in.');
       }
-    },
 
-    async addNewUser({ commit, state }, payload) {
-      try {
-        const { data } = await axios.post(
-          `https://recipe-vue-batch2-default-rtdb.firebaseio.com/user.json?auth=${state.token}`,
-          payload,
-        );
-        commit("setUserLogin", { userData: payload, loginStatus: true });
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    async getUser({ commit }, payload) {
-      try {
-        const { data } = await axios.get(
-          `https://recipe-vue-batcan2-default-rtdb.firebaseio.com/user.json`,
-        );
-
-        for (let key in data) {
-          if (data[key].userId === payload) {
-            Cookies.set("UID", data[key].userId);
-
-            commit("setUserLogin", {
-              userData: data[key],
-              loginStatus: true,
-            });
-          }
-        }
-      } catch (err) {
-        console.log(err);
-      }
+      commit('setSession', { ...data, userId: data.localId, userData });
+      scheduleLogout(commit, Date.now() + Number(data.expiresIn) * 1000);
     },
   },
 };
