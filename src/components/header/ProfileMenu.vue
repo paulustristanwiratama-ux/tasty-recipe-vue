@@ -11,6 +11,10 @@
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
+      <li><RouterLink to="/user/personal-info" class="dropdown-item">My Profile</RouterLink></li>
+      <li><RouterLink to="/user/favorite-recipes" class="dropdown-item">Favorited Recipes</RouterLink></li>
+      <li><RouterLink to="/user/user-recipe" class="dropdown-item">My Recipes</RouterLink></li>
+      <li><hr class="dropdown-divider" /></li>
       <li>
         <button type="button" class="dropdown-item" @click="logout">Logout</button>
       </li>
