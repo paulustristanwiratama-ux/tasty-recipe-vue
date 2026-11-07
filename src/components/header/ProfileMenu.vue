@@ -11,13 +11,22 @@
       <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
-      <li class="dropdown-item">{{ store.state.auth.userLogin.email || 'Signed in' }}</li>
+      <li>
+        <button type="button" class="dropdown-item" @click="logout">Logout</button>
+      </li>
     </ul>
   </div>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
+const router = useRouter();
 const store = useStore();
+
+function logout() {
+  store.commit('auth/logout');
+  router.push('/');
+}
 </script>
