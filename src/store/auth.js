@@ -123,5 +123,31 @@ export default {
       commit('setSession', { ...data, userId: data.localId, userData });
       scheduleLogout(commit, Date.now() + Number(data.expiresIn) * 1000);
     },
+    async login({ commit }, { email, password }) {
+      requireFirebaseConfig();
+
+      let data;
+      try {
+        ({ data } = await axios.post(
+          `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
+          { email, password, returnSecureToken: true },
+        ));
+      } catch (error) {
+        throw authError(error);
+      }
+
+      let userData = { userId: data.localId, email };
+      try {
+        const response = await axios.get(`${databaseUrl}/user/${data.localId}.json`, {
+          params: { auth: data.idToken },
+        });
+        userData = response.data || userData;
+      } catch {
+        // Authentication succeeded; profile data is optional for the navbar.
+      }
+
+      commit('setSession', { ...data, userId: data.localId, userData });
+      scheduleLogout(commit, Date.now() + Number(data.expiresIn) * 1000);
+    },
   },
 };
