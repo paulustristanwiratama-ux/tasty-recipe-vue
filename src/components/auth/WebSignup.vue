@@ -20,18 +20,30 @@
         <base-input type="email" identity="email" placeholder="Your email adress" label="Email">
         </base-input><!-- Email -->
 
-        <base-input type="password" identity="password" placeholder="Your password" label="Password">
+        <base-input type="password" identity="password" placeholder="Your password" label="Password"
+          v-model="signupData.password" @keyInput="passwordCheck">
+          <p class="text-danger mt-1 fw-medium" style="font-size: 11px" :style="{ display: passwordStatusDisplay }">
+            The password field must be atleast 8 characters
+          </p>
         </base-input><!-- Password -->
 
         <base-input type="password" identity="cofirmationPassword" placeholder="Same with password"
-          label="Conform Password">
+          label="Conform Password" v-model="signupData.confirmationPassword" @keyInput="confirmationPasswordCheck">
+          <p class="text-danger mt-1 fw-medium" style="font-size: 11px"
+              :style="{ display: confirmPasswordDoesNotMatch }">
+            The password does not match
+          </p>
+          <p class="text-success mt-1 fw-medium" style="font-size: 11px"
+              :style="{ display: confirmPasswordMatch }">
+            The password matches
+          </p>
         </base-input><!-- Confirm Password -->
 
         <div class="my-4">
           <base-input type="file" identity="recipeImage" label="Profile Photo" isImage="true" @input="checkImage">
             <div>
               <div class="border p-1 mt-2 rounded-circle">
-                <!-- <img src="../../assets/images/user.png" class="rounded-circle" width="140" height="150" style="object-fit: cover" /> -->
+                <img :src="signupData.imageLink" class="rounded-circle" width="140" height="150" style="object-fit: cover" />
               </div>
               <div class="text-center" style="transform: translateY (-24px) ">
                 <i class="fa-solid fa-camera fs-5 p-2rounded-circle bg-white"></i>
@@ -41,13 +53,14 @@
         </div><!-- Profile Picture -->
       </form>
 
-      <base-button
-        class="login w-100 my-3">Register
+      <base-button class="login w-100 my-3">Register
       </base-button>
 
       <div class="text-center mt-4">
         <p class="fw-semibold">
-          Already have account?<span style="color: #4c4ddc"><RouterLink to="/login" class="text-decoration-none">Login</RouterLink></span>
+          Already have account?<span style="color: #4c4ddc">
+            <RouterLink to="/login" class="text-decoration-none">Login</RouterLink>
+          </span>
         </p>
       </div>
     </div>
@@ -57,7 +70,7 @@
 <script setup>
 import BaseButton from "../ui/BaseButton.vue";
 import BaseInput from "../ui/BaseInput.vue";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 const signupData = reactive({
   firstname: "",
@@ -69,4 +82,42 @@ const signupData = reactive({
   isLogin: false,
   imageLink: "",
 });
+
+const passwordStatusDisplay = ref("none")
+const confirmPasswordDoesNotMatch = ref("none");
+const confirmPasswordMatch = ref("none");
+
+const passwordCheck = () => {
+  if (signupData.password.length < 8) {
+    passwordStatusDisplay.value = "block"
+  } else {
+    passwordStatusDisplay.value = "none"
+  }
+}
+
+const confirmationPasswordCheck = () => {
+  if (signupData.confirmationPassword === "") {
+    confirmPasswordDoesNotMacth.value = "none";
+    confirmPasswordMacth.value = "none";
+    return;
+  }
+
+  if (signupData.password !== signupData.confirmationPassword) {
+    confirmPasswordDoesNotMacth.value = "block";
+    confirmPasswordMacth.value = "none";
+    return;
+  }
+  confirmPasswordDoesNotMacth.value = "none";
+  confirmPasswordMacth.value = "block";
+};
+
+const checkImage = (e) => {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.readerAsDataURL (file);
+
+  reader.addEventListener("load",()=>{
+    signupData.imageLink = reader.result;
+  });
+};
 </script>
