@@ -6,7 +6,7 @@
         <h2 class="mt-4">Create your account</h2>
         <p>Enter your details to use all the app features.</p>
       </div>
-      <form class="mt-3">
+      <form class="mt-3" @submit.prevent="register">
         <div class="row">
           <base-input type="text" identity="firstname" placeholder="Ex: Jack" label="Firstname">
           </base-input><!-- Firstname -->
@@ -71,6 +71,8 @@
 import BaseButton from "../ui/BaseButton.vue";
 import BaseInput from "../ui/BaseInput.vue";
 import { reactive, ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 const signupData = reactive({
   firstname: "",
@@ -82,8 +84,6 @@ const signupData = reactive({
   isLogin: false,
   imageLink: "",
 });
-
-// applyActionCode
 
 const passwordStatusDisplay = ref("none")
 const confirmPasswordDoesNotMatch = ref("none");
@@ -121,5 +121,23 @@ const checkImage = (e) => {
   reader.addEventListener("load",()=>{
     signupData.imageLink = reader.result;
   });
+};
+
+const store = useStore ()
+const router = useRouter ()
+
+const register = async () => {
+  if (
+    signupData.password !== signupData.confirmationPassword ||
+    signupData.password.length < 8
+  ) {
+    signupData.confirmationPassword = "";
+    signupData.password = "";
+    confirmPasswordDoesNotMacth.value = "none";
+    confirmPasswordMacth.value = "none";
+  }else {
+    await store.dispatch ("auth/getRegisterData", signupData);
+    router.push("/");
+  }
 };
 </script>
