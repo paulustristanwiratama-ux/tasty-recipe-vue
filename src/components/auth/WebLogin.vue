@@ -6,11 +6,11 @@
         <h2 class="mt-4">Log in to your account</h2>
         <p>Welcome back! Please enter your details.</p>
       </div>
-      <form>
-        <base-input type="email" identity="email" placeholder="Your email adress" label="Email">
+      <form @submit.prevent="login">
+        <base-input type="email" identity="email" placeholder="Your email adress" label="Email" v-model="loginData.email">
         </base-input><!-- Email -->
 
-        <base-input type="password" identity="password" placeholder="Your password" label="Password">
+        <base-input type="password" identity="password" placeholder="Your password" label="Password" v-model="loginData.password">
         </base-input><!-- Password -->
       </form>
 
@@ -32,4 +32,11 @@
 <script setup>
   import BaseButton from "../ui/BaseButton.vue";
   import BaseInput from "../ui/BaseInput.vue";
+  import { reactive } from 'vue';
+
+  const loginData = reactive({
+    email: "",
+    password: "",
+    isLogin: true
+  })
 </script>

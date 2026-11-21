@@ -1,5 +1,16 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
+const store = useStore ()
+const router = useRouter ()
+
+const login = async () => {
+    await store.dispatch ("auth/getLoginData", loginData);
+    router.push("/")
+}
+
 export default {
   namespaced: true,
   state() {
@@ -56,6 +67,31 @@ export default {
         console.log(err);
       }
     },
+
+    async getLoginData({ commit, dispatch }, payload) {
+      const APIkey = "MASUKKAN_WEB_API_KEY";
+      const authUrl =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+
+      try {
+        const { data } = await axios.post(authUrl + APIkey, {
+          email: payload.email,
+          password: payload.password,
+          returnSecureToken: true,
+        });
+
+        commit("setToken", {
+          idToken: data.idToken,
+          expiresIn:
+            new Date().getTime() + Number.parseInt(data.expires_in) * 1000,
+        });
+
+        await dispatch("getUser", data.localId);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     async addNewUser({ commit, state }, payload) {
       try {
         const { data } = await axios.post(
@@ -63,6 +99,27 @@ export default {
           payload,
         );
         commit("setUserLogin", { userData: payload, loginStatus: true });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async getUser({ commit }, payload) {
+      try {
+        const { data } = await axios.get(
+          `https://recipe-vue-batcan2-default-rtdb.firebaseio.com/user.json`,
+        );
+
+        for (let key in data) {
+          if (data[key].userId === payload) {
+            Cookies.set("UID", data[key].userId);
+
+            commit("setUserLogin", {
+              userData: data[key],
+              loginStatus: true,
+            });
+          }
+        }
       } catch (err) {
         console.log(err);
       }
