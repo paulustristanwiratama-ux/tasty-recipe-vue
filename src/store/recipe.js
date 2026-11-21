@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const databaseURL = import.meta.env.VITE_FIREBASE_DATABASE_URL;
+
 export default {
   namespaced: true,
   state() {
@@ -20,7 +22,7 @@ export default {
     async getRecipeData({ commit }) {
       try {
         const { data } = await axios.get(
-          "https://recipe-vue-batch2-default-rtdb.firebaseio.com/recipes.json",
+          `${databaseURL}/recipes.json`,
         );
 
         const recipes = [];
@@ -36,7 +38,7 @@ export default {
     async getRecipeDetail({ commit }, payload) {
       try {
         const { data } = await axios.get(
-          `https://recipe-vue-batch2-default-rtdb.firebaseio.com/recipes/${payload}.json`);
+          `${databaseURL}/recipes/${payload}.json`);
 
         commit("setRecipeDetail", data ?? {});
       } catch (err) {
