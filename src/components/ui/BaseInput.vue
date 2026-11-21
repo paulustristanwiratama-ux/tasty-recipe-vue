@@ -26,5 +26,5 @@
         readonly: { type: String, require: true , default: "0"},
         isImage: { type: Boolean, require: true, default: false },
         modelValue: { type: [String, Number]}
-    })
+    });
 </script>

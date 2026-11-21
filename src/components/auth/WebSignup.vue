@@ -83,6 +83,8 @@ const signupData = reactive({
   imageLink: "",
 });
 
+// applyActionCode
+
 const passwordStatusDisplay = ref("none")
 const confirmPasswordDoesNotMatch = ref("none");
 const confirmPasswordMatch = ref("none");
@@ -93,7 +95,7 @@ const passwordCheck = () => {
   } else {
     passwordStatusDisplay.value = "none"
   }
-}
+};
 
 const confirmationPasswordCheck = () => {
   if (signupData.confirmationPassword === "") {
