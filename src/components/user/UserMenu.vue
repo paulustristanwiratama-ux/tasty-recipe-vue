@@ -26,7 +26,7 @@
         :aria-current="activeSection === item.id ? 'page' : undefined"
         @click="emit('changeComponent', item.id)"
       >
-        {{ item.label }}
+        <i :class="item.icon" class="pe-2" aria-hidden="true"></i>{{ item.label }}
       </button>
     </div>
   </aside>
@@ -43,8 +43,8 @@ const user = computed(() => store.state.auth.userLogin);
 const name = computed(() => [user.value.firstname, user.value.lastname].filter(Boolean).join(' ') || user.value.username || user.value.email || 'My Profile');
 
 const items = [
-  { id: 'personal-info', label: 'Personal Info' },
-  { id: 'favorite-recipes', label: 'Favorited Recipes' },
-  { id: 'user-recipe', label: 'My Recipes' },
+  { id: 'personal-info', label: 'Personal Info', icon: 'fa-solid fa-user' },
+  { id: 'favorite-recipes', label: 'Favorited Recipes', icon: 'fa-solid fa-heart' },
+  { id: 'user-recipe', label: 'My Recipes', icon: 'fa-solid fa-burger' },
 ];
 </script>
