@@ -9,6 +9,8 @@ import "bootstrap/dist/js/bootstrap.js";
 // import axios from "axios";
 import {store} from './store/index'
 
+store.dispatch('auth/restore');
+
 const router = createRouter({
   history: createWebHistory(),
   routes,

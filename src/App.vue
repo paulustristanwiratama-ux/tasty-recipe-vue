@@ -1,25 +1,12 @@
 <template>
   <div>
-    <web-header></web-header>
+    <WebHeader />
     <router-view></router-view>
-    <web-footer></web-footer>
+    <WebFooter />
   </div>
 </template>
 
-<script>
-import HomePage from "./components/pages/HomePage.vue";
-import WebFooter from "./components/footer/WebFooter.vue";
-import WebHeader from "./components/header/WebHeader.vue";
-
-export default {
-  components: {
-    HomePage,
-    WebHeader,
-    WebFooter
-  }
-}
+<script setup>
+import WebFooter from './components/footer/WebFooter.vue';
+import WebHeader from './components/header/WebHeader.vue';
 </script>
-
-<style scoped>
-
-</style>
